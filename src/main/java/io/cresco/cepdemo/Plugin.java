@@ -30,6 +30,7 @@ public class Plugin implements PluginService {
     private Map<String, Object> map;
     public String myname;
     private Thread messageSenderThread;
+    private MeasurementEngine me;
 
     @Override
     public boolean isActive() {
@@ -85,13 +86,14 @@ public class Plugin implements PluginService {
                 logger.info("Plugin " + pluginBuilder.getPluginID() + " waiting on Agent Init");
                 Thread.sleep(1000);
             }
+            me = new MeasurementEngine(pluginBuilder);
 
 
             int configMode = pluginBuilder.getConfig().getIntegerParam("mode",-1);
 
             if(configMode == 0) {
                 //send a bunch of messages
-                MessageSender messageSender = new MessageSender(pluginBuilder);
+                MessageSender messageSender = new MessageSender(pluginBuilder,me);
                 messageSenderThread = new Thread(messageSender);
                 messageSenderThread.start();
                 logger.info("Started CEP Example Message Sender");

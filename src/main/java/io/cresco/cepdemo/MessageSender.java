@@ -2,6 +2,7 @@ package io.cresco.cepdemo;
 
 import com.google.gson.Gson;
 import io.cresco.library.data.TopicType;
+import io.cresco.library.metrics.CrescoMeterRegistry;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
 
@@ -15,13 +16,13 @@ public class MessageSender implements Runnable  {
     private PluginBuilder plugin;
     private CLogger logger;
     private Gson gson;
+    private MeasurementEngine me;
 
-
-
-    public MessageSender(PluginBuilder plugin) {
+    public MessageSender(PluginBuilder plugin, MeasurementEngine me) {
         this.plugin = plugin;
         logger = plugin.getLogger(this.getClass().getName(), CLogger.Level.Info);
         gson = new Gson();
+        this.me = me;
         logger.info("Mode=0");
     }
 
@@ -51,6 +52,8 @@ public class MessageSender implements Runnable  {
     private void sendIt() {
 
         try {
+            long t0 = System.currentTimeMillis();
+
             String inputStreamName = "UserStream";
 
             TextMessage tickle = plugin.getAgentService().getDataPlaneService().createTextMessage();
@@ -58,6 +61,8 @@ public class MessageSender implements Runnable  {
             tickle.setStringProperty("stream_name",inputStreamName);
 
             plugin.getAgentService().getDataPlaneService().sendMessage(TopicType.AGENT,tickle);
+            long diff = System.currentTimeMillis() - t0;
+            me.updateTimer("cep.transaction.time", diff);
 
         } catch (Exception ex) {
             ex.printStackTrace();

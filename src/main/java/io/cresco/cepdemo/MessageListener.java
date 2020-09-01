@@ -20,6 +20,7 @@ public class MessageListener implements Runnable  {
         logger = plugin.getLogger(this.getClass().getName(), CLogger.Level.Info);
         gson = new Gson();
         logger.info("Mode=1");
+
     }
 
     public void run() {
