@@ -2,12 +2,11 @@ package io.cresco.cepdemo;
 
 import com.google.gson.Gson;
 import io.cresco.library.data.TopicType;
-import io.cresco.library.metrics.CrescoMeterRegistry;
+import io.cresco.library.metrics.CMetric;
+import io.cresco.library.metrics.MeasurementEngine;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import java.util.Random;
 
@@ -24,7 +23,22 @@ public class MessageSender implements Runnable  {
         gson = new Gson();
         this.me = me;
         logger.info("Mode=0");
+        //set metrics
+        metricInit();
+
     }
+
+    private void metricInit() {
+
+        me.setTimer("cep.transaction.time", "The timer for cep messages", "cep");
+        me.setGauge("cep.transaction.time.g.i", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_INT);
+        me.setGauge("cep.transaction.time.g.l", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_LONG);
+        me.setGauge("cep.transaction.time.g.d", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_DOUBLE);
+        me.setDistributionSummary("cep.transaction.time.ds", "The timer for cep messages", "cep");
+
+    }
+
+
 
     public void run() {
 
@@ -63,6 +77,10 @@ public class MessageSender implements Runnable  {
             plugin.getAgentService().getDataPlaneService().sendMessage(TopicType.AGENT,tickle);
             long diff = System.currentTimeMillis() - t0;
             me.updateTimer("cep.transaction.time", diff);
+            me.updateIntGauge("cep.transaction.time.g.i", 123);
+            me.updateLongGauge("cep.transaction.time.g.l", 1234567890123456788l);
+            me.updateDoubleGauge("cep.transaction.time.g.d", 12345.6789);
+            me.updateDistributionSummary("cep.transaction.time.ds",t0);
 
         } catch (Exception ex) {
             ex.printStackTrace();

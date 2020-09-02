@@ -3,6 +3,7 @@ package io.cresco.cepdemo;
 
 import io.cresco.library.agent.AgentService;
 import io.cresco.library.messaging.MsgEvent;
+import io.cresco.library.metrics.MeasurementEngine;
 import io.cresco.library.plugin.Executor;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.plugin.PluginService;
@@ -74,20 +75,17 @@ public class Plugin implements PluginService {
     @Override
     public boolean isStarted() {
 
-        System.out.println("Started PluginID:" + (String) map.get("pluginID"));
-
         try {
             pluginBuilder = new PluginBuilder(this.getClass().getName(), context, map);
             this.logger = pluginBuilder.getLogger(Plugin.class.getName(), CLogger.Level.Info);
-            this.executor = new ExecutorImpl(pluginBuilder);
+            me = new MeasurementEngine(pluginBuilder);
+            this.executor = new ExecutorImpl(pluginBuilder, me);
             pluginBuilder.setExecutor(executor);
 
             while (!pluginBuilder.getAgentService().getAgentState().isActive()) {
                 logger.info("Plugin " + pluginBuilder.getPluginID() + " waiting on Agent Init");
                 Thread.sleep(1000);
             }
-            me = new MeasurementEngine(pluginBuilder);
-
 
             int configMode = pluginBuilder.getConfig().getIntegerParam("mode",-1);
 
@@ -119,12 +117,11 @@ public class Plugin implements PluginService {
 
     @Override
     public boolean isStopped() {
-        pluginBuilder.setExecutor(null);
-        pluginBuilder.setIsActive(false);
+
         try {
-            if(messageSenderThread.isAlive()) {
-                messageSenderThread.join();
-            }
+            pluginBuilder.setIsActive(false);
+            pluginBuilder.setExecutor(null);
+
         } catch (Exception ex) {
             logger.error("Waiting on thread: " + ex.getMessage());
             StringWriter sw = new StringWriter();
