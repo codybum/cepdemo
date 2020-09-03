@@ -75,6 +75,7 @@ ExecutorImpl implements Executor {
 
             Map<String, List<Map<String,String>>> info = new HashMap<>();
             info.put("cep", me.getMetricGroupList("cep"));
+            info.put("jvm", me.getMetricGroupList("jvm"));
 
             Map<String,String> metricsMap = new HashMap<>();
             metricsMap.put("name","cep_group");

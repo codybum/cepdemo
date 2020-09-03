@@ -98,7 +98,7 @@ public class Plugin implements PluginService {
 
             } else if(configMode == 1) {
                 //listen for messages
-                MessageListener messageListener = new MessageListener(pluginBuilder);
+                MessageListener messageListener = new MessageListener(pluginBuilder,me);
                 Thread messageListenerThread = new Thread(messageListener);
                 messageListenerThread.start();
                 logger.info("Started CEP Example Message Listener");

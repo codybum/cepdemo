@@ -2,7 +2,6 @@ package io.cresco.cepdemo;
 
 import com.google.gson.Gson;
 import io.cresco.library.data.TopicType;
-import io.cresco.library.metrics.CMetric;
 import io.cresco.library.metrics.MeasurementEngine;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
@@ -30,11 +29,12 @@ public class MessageSender implements Runnable  {
 
     private void metricInit() {
 
-        me.setTimer("cep.transaction.time", "The timer for cep messages", "cep");
-        me.setGauge("cep.transaction.time.g.i", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_INT);
-        me.setGauge("cep.transaction.time.g.l", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_LONG);
-        me.setGauge("cep.transaction.time.g.d", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_DOUBLE);
-        me.setDistributionSummary("cep.transaction.time.ds", "The timer for cep messages", "cep");
+        me.setTimer("message.send.time", "The timer for cep messages", "cep_send");
+        //me.setGauge("message.send.value", "The timer for cep messages", "cep_send", CMetric.MeasureClass.GAUGE_DOUBLE);
+        //me.setGauge("cep.transaction.time.g.i", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_INT);
+        //me.setGauge("cep.transaction.time.g.l", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_LONG);
+        //me.setGauge("cep.transaction.time.g.d", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_DOUBLE);
+        //me.setDistributionSummary("cep.transaction.time.ds", "The timer for cep messages", "cep");
 
     }
 
@@ -54,9 +54,13 @@ public class MessageSender implements Runnable  {
 
         while(plugin.isActive()) {
             try {
+                long t0 = System.currentTimeMillis();
                 //send a message once a second
                 sendIt();
                 Thread.sleep(1000);
+                long diff = System.currentTimeMillis() - t0;
+                me.updateTimer("message.send.time", diff);
+
             } catch(Exception ex) {
                 ex.printStackTrace();
             }
@@ -66,7 +70,6 @@ public class MessageSender implements Runnable  {
     private void sendIt() {
 
         try {
-            long t0 = System.currentTimeMillis();
 
             String inputStreamName = "UserStream";
 
@@ -75,12 +78,13 @@ public class MessageSender implements Runnable  {
             tickle.setStringProperty("stream_name",inputStreamName);
 
             plugin.getAgentService().getDataPlaneService().sendMessage(TopicType.AGENT,tickle);
-            long diff = System.currentTimeMillis() - t0;
+            /*
             me.updateTimer("cep.transaction.time", diff);
             me.updateIntGauge("cep.transaction.time.g.i", 123);
             me.updateLongGauge("cep.transaction.time.g.l", 1234567890123456788l);
             me.updateDoubleGauge("cep.transaction.time.g.d", 12345.6789);
             me.updateDistributionSummary("cep.transaction.time.ds",t0);
+             */
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -97,10 +101,10 @@ public class MessageSender implements Runnable  {
             String source = "mysource";
             String urn = "myurn";
             String metric = "mymetric";
-            long ts = System.currentTimeMillis();
+            long ts = System.nanoTime();
 
             Random r = new Random();
-            double value = r.nextDouble();
+            double value = r.nextDouble() * 100;
 
             Ticker tick = new Ticker(source, urn, metric, ts, value);
 
