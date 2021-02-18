@@ -30,7 +30,10 @@ public class Plugin implements PluginService {
     private Map<String, Object> map;
     public String myname;
     private Thread messageSenderThread;
+    private Thread messageListenerThread;
+    private MessageListener messageListener;
     private MeasurementEngine me;
+    private int configMode = -1;
 
     @Override
     public boolean isActive() {
@@ -74,8 +77,6 @@ public class Plugin implements PluginService {
     @Override
     public boolean isStarted() {
 
-        System.out.println("Started PluginID:" + (String) map.get("pluginID"));
-
         try {
             pluginBuilder = new PluginBuilder(this.getClass().getName(), context, map);
             this.logger = pluginBuilder.getLogger(Plugin.class.getName(), CLogger.Level.Info);
@@ -89,7 +90,7 @@ public class Plugin implements PluginService {
             me = new MeasurementEngine(pluginBuilder);
 
 
-            int configMode = pluginBuilder.getConfig().getIntegerParam("mode",-1);
+            configMode = pluginBuilder.getConfig().getIntegerParam("mode",-1);
 
             if(configMode == 0) {
                 //send a bunch of messages
@@ -100,13 +101,14 @@ public class Plugin implements PluginService {
 
             } else if(configMode == 1) {
                 //listen for messages
-                MessageListener messageListener = new MessageListener(pluginBuilder);
-                Thread messageListenerThread = new Thread(messageListener);
+                messageListener = new MessageListener(pluginBuilder);
+                messageListenerThread = new Thread(messageListener);
                 messageListenerThread.start();
                 logger.info("Started CEP Example Message Listener");
             } else {
                 logger.error("Invalid or no config mode found.  Mode=" + configMode);
             }
+            logger.info("Started PluginID:" + (String) map.get("pluginID"));
 
             //set plugin active
             return true;
@@ -122,8 +124,14 @@ public class Plugin implements PluginService {
         pluginBuilder.setExecutor(null);
         pluginBuilder.setIsActive(false);
         try {
-            if(messageSenderThread.isAlive()) {
-                messageSenderThread.join();
+            if(configMode == 0) {
+                if (messageSenderThread.isAlive()) {
+                    messageSenderThread.join();
+                }
+            }
+
+            if(configMode == 1) {
+                messageListener.stopListners();
             }
         } catch (Exception ex) {
             logger.error("Waiting on thread: " + ex.getMessage());

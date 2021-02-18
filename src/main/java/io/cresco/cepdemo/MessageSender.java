@@ -54,7 +54,8 @@ public class MessageSender implements Runnable  {
         try {
             long t0 = System.currentTimeMillis();
 
-            String inputStreamName = "UserStream";
+            //String inputStreamName = "UserStream";
+            String inputStreamName = plugin.getConfig().getStringParam("pluginID").replace("-","");
 
             TextMessage tickle = plugin.getAgentService().getDataPlaneService().createTextMessage();
             tickle.setText(getStringPayload());
