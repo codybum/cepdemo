@@ -2,7 +2,6 @@ package io.cresco.cepdemo;
 
 import com.google.gson.Gson;
 import io.cresco.library.data.TopicType;
-import io.cresco.library.metrics.MeasurementEngine;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
 
@@ -14,13 +13,14 @@ public class MessageSender implements Runnable  {
     private PluginBuilder plugin;
     private CLogger logger;
     private Gson gson;
-    private MeasurementEngine me;
+    //private MeasurementEngine me;
 
-    public MessageSender(PluginBuilder plugin, MeasurementEngine me) {
+    //public MessageSender(PluginBuilder plugin, MeasurementEngine me) {
+    public MessageSender(PluginBuilder plugin) {
         this.plugin = plugin;
         logger = plugin.getLogger(this.getClass().getName(), CLogger.Level.Info);
         gson = new Gson();
-        this.me = me;
+        //this.me = me;
         logger.info("Mode=0");
         //set metrics
         metricInit();
@@ -29,7 +29,7 @@ public class MessageSender implements Runnable  {
 
     private void metricInit() {
 
-        me.setTimer("message.send.time", "The timer for cep messages", "cep_send");
+        //me.setTimer("message.send.time", "The timer for cep messages", "cep_send");
         //me.setGauge("message.send.value", "The timer for cep messages", "cep_send", CMetric.MeasureClass.GAUGE_DOUBLE);
         //me.setGauge("cep.transaction.time.g.i", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_INT);
         //me.setGauge("cep.transaction.time.g.l", "The timer for cep messages", "cep", CMetric.MeasureClass.GAUGE_LONG);
@@ -56,8 +56,8 @@ public class MessageSender implements Runnable  {
                 //send a message once a second
                 sendIt();
                 Thread.sleep(1000);
-                long diff = System.currentTimeMillis() - t0;
-                me.updateTimer("message.send.time", diff);
+                //long diff = System.currentTimeMillis() - t0;
+                //me.updateTimer("message.send.time", diff);
 
             } catch(Exception ex) {
                 ex.printStackTrace();

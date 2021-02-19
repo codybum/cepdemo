@@ -33,7 +33,7 @@ public class Plugin implements PluginService {
     private Thread messageSenderThread;
     private Thread messageListenerThread;
     private MessageListener messageListener;
-    private MeasurementEngine me;
+    //private MeasurementEngine me;
     private int configMode = -1;
 
     @Override
@@ -81,21 +81,23 @@ public class Plugin implements PluginService {
         try {
             pluginBuilder = new PluginBuilder(this.getClass().getName(), context, map);
             this.logger = pluginBuilder.getLogger(Plugin.class.getName(), CLogger.Level.Info);
-            this.executor = new ExecutorImpl(pluginBuilder, me);
+            //this.executor = new ExecutorImpl(pluginBuilder, me);
+            this.executor = new ExecutorImpl(pluginBuilder);
             pluginBuilder.setExecutor(executor);
 
             while (!pluginBuilder.getAgentService().getAgentState().isActive()) {
                 logger.info("Plugin " + pluginBuilder.getPluginID() + " waiting on Agent Init");
                 Thread.sleep(1000);
             }
-            me = new MeasurementEngine(pluginBuilder);
+            //me = new MeasurementEngine(pluginBuilder);
 
 
             configMode = pluginBuilder.getConfig().getIntegerParam("mode",-1);
 
             if(configMode == 0) {
                 //send a bunch of messages
-                MessageSender messageSender = new MessageSender(pluginBuilder,me);
+                //MessageSender messageSender = new MessageSender(pluginBuilder,me);
+                MessageSender messageSender = new MessageSender(pluginBuilder);
                 messageSenderThread = new Thread(messageSender);
                 messageSenderThread.start();
                 logger.info("Started CEP Example Message Sender");

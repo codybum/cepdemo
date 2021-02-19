@@ -2,28 +2,29 @@ package io.cresco.cepdemo;
 
 import com.google.gson.Gson;
 import io.cresco.library.messaging.MsgEvent;
-import io.cresco.library.metrics.MeasurementEngine;
+//import io.cresco.library.metrics.MeasurementEngine;
 import io.cresco.library.plugin.Executor;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.utilities.CLogger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
 
 public class
 ExecutorImpl implements Executor {
 
     private PluginBuilder plugin;
     private CLogger logger;
-    private MeasurementEngine me;
+    //private MeasurementEngine me;
     private Gson gson;
 
-    public ExecutorImpl(PluginBuilder pluginBuilder, MeasurementEngine me) {
+    //public ExecutorImpl(PluginBuilder pluginBuilder, MeasurementEngine me) {
+    public ExecutorImpl(PluginBuilder pluginBuilder) {
         this.plugin = pluginBuilder;
         logger = plugin.getLogger(ExecutorImpl.class.getName(),CLogger.Level.Info);
-        this.me = me;
+        //this.me = me;
         gson = new Gson();
     }
 
@@ -49,7 +50,7 @@ ExecutorImpl implements Executor {
     public MsgEvent executeEXEC(MsgEvent incoming) {
 
         logger.debug("Processing Exec message : " + incoming.getParams());
-
+        /*
         if(incoming.getParams().containsKey("action")) {
             switch (incoming.getParam("action")) {
 
@@ -58,6 +59,7 @@ ExecutorImpl implements Executor {
 
             }
         }
+         */
         return null;
     }
     @Override
@@ -68,7 +70,7 @@ ExecutorImpl implements Executor {
     public MsgEvent executeKPI(MsgEvent incoming) {
         return null;
     }
-
+    /*
     public MsgEvent getCEPInfoMap(MsgEvent incoming) {
 
         try {
@@ -92,5 +94,5 @@ ExecutorImpl implements Executor {
 
         return incoming;
     }
-
+    */
 }
