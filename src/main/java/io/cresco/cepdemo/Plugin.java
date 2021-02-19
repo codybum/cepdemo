@@ -3,7 +3,6 @@ package io.cresco.cepdemo;
 
 import io.cresco.library.agent.AgentService;
 import io.cresco.library.messaging.MsgEvent;
-import io.cresco.library.metrics.MeasurementEngine;
 import io.cresco.library.plugin.Executor;
 import io.cresco.library.plugin.PluginBuilder;
 import io.cresco.library.plugin.PluginService;
