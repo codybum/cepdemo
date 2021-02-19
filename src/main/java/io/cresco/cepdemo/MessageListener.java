@@ -33,6 +33,7 @@ public class MessageListener implements Runnable  {
         logger.info("Mode=1");
     }
 
+
     public void run() {
 
         try {
