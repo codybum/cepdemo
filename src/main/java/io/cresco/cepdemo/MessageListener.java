@@ -53,10 +53,6 @@ public class MessageListener implements Runnable  {
     public void stopListners() {
 
         try {
-            //remove cep
-            for (String cepid : CEPList) {
-                plugin.getAgentService().getDataPlaneService().removeCEP(cepid);
-            }
 
             //remove listners
             for(Map<String,Object> edgeMap : edgeMapList) {
@@ -64,6 +60,11 @@ public class MessageListener implements Runnable  {
                 String node_to = edgeMap.get("node_to").toString().replace("-","");
                 plugin.getAgentService().getDataPlaneService().removeMessageListener("stream_name='" + node_from + "'");
                 plugin.getAgentService().getDataPlaneService().removeMessageListener("stream_name='" + node_to + "'");
+            }
+
+            //remove cep
+            for (String cepid : CEPList) {
+                plugin.getAgentService().getDataPlaneService().removeCEP(cepid);
             }
 
         } catch(Exception ex) {
