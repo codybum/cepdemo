@@ -129,7 +129,7 @@ public class MessageListener implements Runnable  {
                 "select source, avg(value) as avgValue " +
                 "  group by source " +
                 "insert into " + node_to + "; ";
-        logger.error(queryString);
+
         //public String createCEP(String inputStreamName, String inputStreamDefinition, String outputStreamName, String outputStreamDefinition, String queryString) {
         String cepid = plugin.getAgentService().getDataPlaneService().createCEP(node_from, inputStreamDescription, node_to,outputStreamDescription, queryString);
         logger.error("CEPID: " + cepid);
